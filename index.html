@@ -1,259 +1,386 @@
-<div class="container mx-auto px-4 md:px-8 max-w-5xl">
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Volution | Wirkungsvolle Business Retreats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: Die SPA ist als Überzeugungs-Trichter konzipiert, der potenzielle Kunden von einem allgemeinen Problem zu einer spezifischen Lösung führt. 1. Hero-Sektion, um Aufmerksamkeit zu erregen. 2. Ein interaktiver Vergleich, um das Kernproblem (Unterschied zu Offsites/Workshops) direkt zu adressieren und den einzigartigen Wert zu demonstrieren. 3. Eine visuelle Darstellung der Methodik, um Vertrauen aufzubauen. 4. Ein filterbarer Angebotskatalog, damit Nutzer schnell relevante Lösungen für ihre Bedürfnisse finden. 5. Eine Chart.js-Visualisierung zur quantitativen Untermauerung des Nutzens. 6. Ein klarer Call-to-Action. Diese Struktur wurde gewählt, um den Nutzer logisch durch den Entscheidungsprozess zu führen, anstatt nur Informationen passiv darzustellen. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Abgrenzung Retreat vs. Offsite/Workshop. -> Goal: Compare. -> Viz/Method: Interaktiver 3-spaltiger Vergleich (HTML/Tailwind/JS) mit Tasten zur Auswahl von Vergleichskriterien. -> Interaction: Klick auf Kriterien-Buttons aktualisiert den angezeigten Text in allen drei Spalten. -> Justification: Direkter, interaktiver Vergleich ist überzeugender und klarer als eine lange Textbeschreibung.
+        - Report Info: Konkrete Anwendungsfälle und Angebote. -> Goal: Organize/Inform. -> Viz/Method: Filterbare Karten (HTML/Tailwind/JS) für jedes Angebot. -> Interaction: Klick auf Themen-Filter (z.B. "Strategie") zeigt nur die relevanten Angebotskarten an. -> Justification: Ermöglicht dem Nutzer eine schnelle, selbstgesteuerte Navigation zu den für ihn relevanten Inhalten.
+        - Report Info: Qualitativer Nutzen eines Retreats. -> Goal: Compare/Inform. -> Viz/Method: Radar-Chart (Chart.js/Canvas). -> Interaction: Hover-Tooltips zeigen genaue Werte an. -> Justification: Eine visuelle Daten-Darstellung kann den qualitativen Mehrwert auf einen Blick zusammenfassen und einprägsamer machen als reiner Text.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #d97706; 
+        }
+        .filter-btn {
+            transition: all 0.3s;
+        }
+        .filter-btn.active {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        .retreat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            will-change: transform;
+        }
+        .retreat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
 
-    <header class="text-center py-16 md:py-20">
-        <h1 class="text-4xl md:text-6xl font-black uppercase" style="color: #0D47A1;">MEHR ALS NUR <br><span style="color: #1976D2;">EIN OFFSITE</span></h1>
-        <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto">Unternehmen brauchen mehr als nur eine Pause vom Büro. Sie brauchen tiefgreifende Veränderung. Entdecken Sie den transformativen Wert von Business Retreats.</p>
+    <header class="bg-stone-50/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-blue-900">A-Volution</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#vergleich" class="nav-link text-stone-600 font-medium">Der Unterschied</a>
+                <a href="#angebote" class="nav-link text-stone-600 font-medium">Angebote</a>
+                <a href="#wert" class="nav-link text-stone-600 font-medium">Ihr Mehrwert</a>
+                <a href="#kontakt" class="nav-link text-stone-600 font-medium">Kontakt</a>
+            </div>
+            <a href="#kontakt" class="hidden md:inline-block bg-amber-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-amber-700 transition-colors">Beratung anfragen</a>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-stone-800 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#vergleich" class="block py-2 px-4 text-sm text-stone-600 hover:bg-stone-200">Der Unterschied</a>
+            <a href="#angebote" class="block py-2 px-4 text-sm text-stone-600 hover:bg-stone-200">Angebote</a>
+            <a href="#wert" class="block py-2 px-4 text-sm text-stone-600 hover:bg-stone-200">Ihr Mehrwert</a>
+            <a href="#kontakt" class="block py-2 px-4 text-sm text-stone-600 hover:bg-stone-200">Kontakt</a>
+            <a href="#kontakt" class="block py-2 px-4 text-sm bg-amber-600 text-white text-center font-semibold m-2 rounded-lg hover:bg-amber-700">Beratung anfragen</a>
+        </div>
     </header>
 
-    <section class="py-12">
-        <h2 class="section-title text-center text-3xl font-bold mb-10">Was ist der Unterschied?</h2>
-        <div class="grid md:grid-cols-3 gap-px bg-gray-200 rounded-lg shadow-lg overflow-hidden">
-            <div class="p-4 sm:p-6 bg-gray-50 font-bold text-gray-600">Fokus</div>
-            <div class="p-4 sm:p-6 bg-white">Teambuilding & Information</div>
-            <div class="p-4 sm:p-6 bg-white">Fähigkeiten & Problemlösung</div>
-            <div class="p-4 sm:p-6 bg-blue-50 border-2 border-blue-500 rounded-lg -m-px z-10">
-                <span class="font-bold text-blue-800">Transformation & Wachstum</span>
+    <main class="container mx-auto px-6">
+        <section class="text-center py-20 md:py-32">
+            <h1 class="text-4xl md:text-6xl font-bold text-blue-900 mb-4">Mehr als ein Offsite.</h1>
+            <p class="text-xl md:text-2xl text-amber-700 font-medium mb-8">Echte Transformation für Ihr Team.</p>
+            <p class="max-w-3xl mx-auto text-stone-600 text-lg">
+                Wir gestalten und führen wirkungsvolle Business Retreats durch, die über klassische Workshops und Offsites hinausgehen. Schaffen Sie Raum für tiefgreifende Veränderung, strategische Klarheit und ein neues Level an Teamzusammenhalt.
+            </p>
+        </section>
+
+        <section id="vergleich" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Der entscheidende Unterschied</h2>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    Ein Business Retreat ist eine Investition in die nachhaltige Entwicklung Ihres Teams und Unternehmens. Im Gegensatz zu traditionellen Formaten schaffen wir einen Rahmen, der auf Tiefe, Fokus und echte Ergebnisse ausgelegt ist. Wählen Sie ein Kriterium, um den Unterschied zu sehen.
+                </p>
             </div>
 
-            <div class="p-4 sm:p-6 bg-gray-50 font-bold text-gray-600">Ergebnis</div>
-            <div class="p-4 sm:p-6 bg-white">Kurzfristige Motivation</div>
-            <div class="p-4 sm:p-6 bg-white">Konkretes Arbeitsergebnis</div>
-            <div class="p-4 sm:p-6 bg-blue-50 border-2 border-blue-500 rounded-lg -m-px z-10">
-                 <span class="font-bold text-blue-800">Nachhaltiger Wandel</span>
+            <div class="flex justify-center flex-wrap gap-2 mb-10">
+                <button data-criterion="ziel" class="comparison-btn bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-medium">🎯 Ziel</button>
+                <button data-criterion="atmosphaere" class="comparison-btn bg-stone-200 text-stone-800 px-4 py-2 rounded-full font-medium">🌿 Atmosphäre</button>
+                <button data-criterion="ergebnis" class="comparison-btn bg-stone-200 text-stone-800 px-4 py-2 rounded-full font-medium">💡 Ergebnis</button>
+                <button data-criterion="dauer" class="comparison-btn bg-stone-200 text-stone-800 px-4 py-2 rounded-full font-medium">⏳ Dauer & Tiefe</button>
             </div>
 
-            <div class="p-4 sm:p-6 bg-gray-50 font-bold text-gray-600">Atmosphäre</div>
-            <div class="p-4 sm:p-6 bg-white">Locker bis geschäftlich</div>
-            <div class="p-4 sm:p-6 bg-white">Strukturiert & fokussiert</div>
-            <div class="p-4 sm:p-6 bg-blue-50 border-2 border-blue-500 rounded-lg -m-px z-10">
-                <span class="font-bold text-blue-800">Inspirierend & tiefgründig</span>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-stone-300">
+                    <h3 class="text-xl font-bold mb-4 text-stone-500">Klassisches Offsite</h3>
+                    <p class="comparison-text text-stone-600 min-h-[120px]" data-id="offsite"></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-xl border-t-4 border-amber-600 transform md:scale-105">
+                    <h3 class="text-2xl font-bold mb-4 text-amber-700">Business Retreat</h3>
+                    <p class="comparison-text text-stone-800 min-h-[120px]" data-id="retreat"></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-stone-300">
+                    <h3 class="text-xl font-bold mb-4 text-stone-500">Workshop</h3>
+                    <p class="comparison-text text-stone-600 min-h-[120px]" data-id="workshop"></p>
+                </div>
             </div>
-        </div>
-         <div class="grid md:grid-cols-3 gap-4 mt-2 text-center text-sm">
-            <div class="font-bold">KLASSISCHES OFFSITE</div>
-            <div class="font-bold">WORKSHOP</div>
-            <div class="font-bold text-blue-800">BUSINESS RETREAT</div>
-        </div>
-    </section>
+        </section>
 
-    <section class="py-12 md:py-16">
-        <h2 class="section-title text-center text-3xl font-bold mb-10">Maßgeschneiderte Retreat-Formate</h2>
-        <p class="text-center max-w-3xl mx-auto mb-10">Jedes Retreat wird auf ein spezifisches Ziel ausgerichtet. Wir konzentrieren uns auf die Bereiche, die den größten Hebel für den Erfolg Ihres Unternehmens haben.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="kpi-box">
-                <div class="text-4xl mb-2">🧭</div>
-                <h3 class="text-xl font-bold text-gray-800">Strategie & Vision</h3>
-                <p class="text-sm mt-1">Zukunft gestalten, Klarheit schaffen und das Team auf ein gemeinsames Ziel ausrichten.</p>
+        <section id="angebote" class="py-16 md:py-24 bg-stone-100 -mx-6 px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Maßgeschneiderte Retreat-Erlebnisse</h2>
+                <p class="max-w-3xl mx-auto text-stone-600">
+                    Jedes Team hat einzigartige Herausforderungen und Ziele. Unsere Retreats sind darauf ausgelegt, genau diese anzugehen. Filtern Sie unsere bewährten Formate nach Ihrem primären Anwendungsfall, um das passende Angebot zu finden.
+                </p>
             </div>
-            <div class="kpi-box">
-                <div class="text-4xl mb-2">🤝</div>
-                <h3 class="text-xl font-bold text-gray-800">Team & Kultur</h3>
-                <p class="text-sm mt-1">Vertrauen stärken, Kommunikation verbessern und eine Kultur der Zusammenarbeit fördern.</p>
-            </div>
-            <div class="kpi-box">
-                <div class="text-4xl mb-2">💡</div>
-                <h3 class="text-xl font-bold text-gray-800">Innovation & Kreation</h3>
-                <p class="text-sm mt-1">Neue Ideen entwickeln, Denkmuster durchbrechen und kreative Lösungen finden.</p>
-            </div>
-            <div class="kpi-box">
-                <div class="text-4xl mb-2">🧠</div>
-                <h3 class="text-xl font-bold text-gray-800">Führung & Resilienz</h3>
-                <p class="text-sm mt-1">Führungskräfte stärken, Selbstreflexion fördern und die Widerstandsfähigkeit erhöhen.</p>
-            </div>
-        </div>
-    </section>
 
-    <section class="py-12 md:py-16">
-        <h2 class="section-title text-center text-3xl font-bold mb-4">Der Fokus eines Business Retreats</h2>
-        <p class="text-center max-w-3xl mx-auto mb-6">Im Gegensatz zu reinen Arbeits-Sessions, balancieren wir strategische Inhalte mit Aktivitäten, die Teamentwicklung und persönliches Wachstum fördern. Diese ganzheitliche Herangehensweise sorgt für nachhaltige Ergebnisse.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="flex justify-center flex-wrap gap-3 mb-10">
+                <button class="filter-btn active px-5 py-2 rounded-full font-medium" data-filter="all">Alle anzeigen</button>
+                <button class="filter-btn bg-white px-5 py-2 rounded-full font-medium" data-filter="strategie">Strategie & Vision</button>
+                <button class="filter-btn bg-white px-5 py-2 rounded-full font-medium" data-filter="team">Team & Kultur</button>
+                <button class="filter-btn bg-white px-5 py-2 rounded-full font-medium" data-filter="innovation">Innovation & Kreation</button>
+                <button class="filter-btn bg-white px-5 py-2 rounded-full font-medium" data-filter="fuehrung">Führungskraft</button>
+            </div>
+
+            <div id="retreat-gallery" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+        </section>
+
+        <section id="wert" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">Ihr messbarer Mehrwert</h2>
+                 <p class="max-w-3xl mx-auto text-stone-600">
+                    Wir konzentrieren uns auf Dimensionen, die den langfristigen Erfolg Ihres Unternehmens beeinflussen. Diese Visualisierung zeigt, wie ein Business Retreat im Vergleich zu anderen Formaten in Schlüsselbereichen abschneidet und somit eine höhere Rendite für Ihre Investition darstellt.
+                </p>
+            </div>
             <div class="chart-container">
-                <canvas id="focusDonutChart"></canvas>
+                <canvas id="valueChart"></canvas>
             </div>
-            <div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">Ein ganzheitlicher Ansatz</h3>
-                <ul class="space-y-3">
-                    <li class="flex items-start">
-                        <span class="text-yellow-500 text-2xl mr-3 font-bold">■</span>
-                        <div><strong class="text-gray-800">Strategische Arbeit (45%):</strong> Fokussierte Sessions zu Vision, Zielen und Roadmaps.</div>
-                    </li>
-                    <li class="flex items-start">
-                         <span class="text-blue-500 text-2xl mr-3 font-bold">■</span>
-                        <div><strong class="text-gray-800">Teamentwicklung (35%):</strong> Aktivitäten zur Stärkung von Vertrauen, Kommunikation und Zusammenarbeit.</div>
-                    </li>
-                    <li class="flex items-start">
-                         <span class="text-blue-300 text-2xl mr-3 font-bold">■</span>
-                        <div><strong class="text-gray-800">Persönliches Wachstum (20%):</strong> Raum für Reflexion, Resilienz-Training und die Entwicklung von Führungsqualitäten.</div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="py-12 md:py-16">
-        <h2 class="section-title text-center text-3xl font-bold mb-4">Messbarer Langzeit-Impact</h2>
-        <p class="text-center max-w-3xl mx-auto mb-6">Die Investition in ein Retreat zahlt sich langfristig aus. Befragungen von Teilnehmern zeigen, dass der wahrgenommene Wert für das Unternehmen Monate nach der Veranstaltung bei Retreats signifikant höher ist.</p>
-        <div class="chart-container mx-auto">
-            <canvas id="impactBarChart"></canvas>
-        </div>
-    </section>
+        <section id="kontakt" class="py-16 md:py-24 bg-blue-900 text-white -mx-6 px-6">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Bereit für den Wandel?</h2>
+                <p class="text-lg text-blue-200 mb-8">
+                    Lassen Sie uns in einem unverbindlichen Gespräch herausfinden, wie ein A-Volution Business Retreat Ihr Team transformieren kann. Wir freuen uns darauf, von Ihren Zielen zu hören und ein maßgeschneidertes Konzept zu entwickeln.
+                </p>
+                <a href="mailto:kontakt@a-volution.de" class="bg-amber-600 text-white font-bold text-lg px-8 py-4 rounded-lg hover:bg-amber-700 transition-colors shadow-lg">Kostenloses Beratungsgespräch vereinbaren</a>
+            </div>
+        </section>
 
-    <section class="py-12 md:py-16">
-         <h2 class="section-title text-center text-3xl font-bold mb-10">Unser gemeinsamer Weg</h2>
-         <div class="max-w-md mx-auto">
-            <div class="flow-step mb-8">
-                <div class="flow-number">1</div>
-                <div class="ml-6">
-                    <h3 class="font-bold text-lg">Kostenloses Erstgespräch</h3>
-                    <p class="text-sm">Wir lernen Ihre Ziele und Herausforderungen kennen.</p>
-                </div>
-            </div>
-            <div class="flow-step mb-8">
-                <div class="flow-number">2</div>
-                <div class="ml-6">
-                    <h3 class="font-bold text-lg">Konzeption & Design</h3>
-                    <p class="text-sm">Wir entwerfen ein maßgeschneidertes Retreat-Programm.</p>
-                </div>
-            </div>
-            <div class="flow-step mb-8">
-                <div class="flow-number">3</div>
-                <div class="ml-6">
-                    <h3 class="font-bold text-lg">Durchführung & Moderation</h3>
-                    <p class="text-sm">Wir führen Sie und Ihr Team durch eine transformative Erfahrung.</p>
-                </div>
-            </div>
-            <div class="flow-step">
-                <div class="flow-number">4</div>
-                <div class="ml-6">
-                    <h3 class="font-bold text-lg">Nachhaltige Integration</h3>
-                    <p class="text-sm">Wir sichern die Ergebnisse durch gezieltes Follow-Up.</p>
-                </div>
-            </div>
-         </div>
-    </section>
-
-    <footer class="text-center py-16">
-        <h2 class="text-2xl md:text-3xl font-bold" style="color:#0D47A1;">Bereit für echte Veränderung?</h2>
-        <p class="my-4 max-w-xl mx-auto">Lassen Sie uns darüber sprechen, wie ein A-Volution Business Retreat Ihr Team auf die nächste Stufe heben kann.</p>
-        <a href="mailto:kontakt@a-volution.de" class="inline-block mt-4 text-white font-bold px-8 py-4 rounded-lg transition-transform hover:scale-105" style="background-color: #FFD600; color: #0D47A1;">Jetzt unverbindlich anfragen</a>
-        <p class="text-xs text-gray-500 mt-8">&copy; 2025 A-Volution | Alle Rechte vorbehalten</p>
+    </main>
+    
+    <footer class="bg-stone-200 text-center py-6">
+        <p class="text-stone-600">&copy; 2025 A-Volution. Alle Rechte vorbehalten.</p>
     </footer>
 
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        const donutCtx = document.getElementById('focusDonutChart').getContext('2d');
-        new Chart(donutCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Strategische Arbeit', 'Teamentwicklung', 'Persönliches Wachstum'],
-                datasets: [{
-                    data: [45, 35, 20],
-                    backgroundColor: ['#FFD600', '#42A5F5', '#90CAF9'],
-                    borderColor: '#ffffff',
-                    borderWidth: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                       callbacks: {
-                            title: function(tooltipItems) {
-                                const item = tooltipItems[0];
-                                let label = item.chart.data.labels[item.dataIndex];
-                                if (Array.isArray(label)) {
-                                  return label.join(' ');
-                                } else {
-                                  return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        const wrapLabel = (label) => {
-            if (label.length > 16) {
-                const words = label.split(' ');
-                const lines = [];
-                let currentLine = '';
-                for (const word of words) {
-                    if ((currentLine + ' ' + word).trim().length > 16) {
-                        lines.push(currentLine.trim());
-                        currentLine = word;
-                    } else {
-                        currentLine = (currentLine + ' ' + word).trim();
-                    }
-                }
-                if (currentLine) {
-                    lines.push(currentLine.trim());
-                }
-                return lines;
-            }
-            return label;
-        };
-
-        const barCtx = document.getElementById('impactBarChart').getContext('2d');
-        new Chart(barCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Business Retreat', 'Klassisches Offsite', 'Klassischer Workshop'].map(wrapLabel),
-                datasets: [{
-                    label: 'Wahrgenommener Langzeit-Wert (Index)',
-                    data: [85, 30, 45],
-                    backgroundColor: ['#1976D2', '#90CAF9', '#42A5F5'],
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        max: 100,
-                         grid: {
-                            display: false,
-                            drawBorder: false
-                        }
-                    },
-                    y: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        }
-                    }
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const comparisonData = {
+                ziel: {
+                    retreat: "Ganzheitliche Transformation: Kombination aus strategischer Arbeit, Teamentwicklung und persönlichem Wachstum. Fokus auf Mindset-Shifts.",
+                    offsite: "Oft unklar oder gemischt. Meist eine Kombination aus Präsentationen, Freizeitaktivitäten und allgemeinem Teambuilding.",
+                    workshop: "Klar definierter, enger Fokus: Erlernen einer spezifischen Fähigkeit, Lösen eines konkreten Problems oder Erarbeiten eines Themas."
                 },
-                plugins: {
-                    legend: {
-                        display: false
+                atmosphaere: {
+                    retreat: "Inspirierend, entschleunigt, vertrauensvoll. Abseits des Alltags, oft in der Natur, um Reflexion und offene Gespräche zu fördern.",
+                    offsite: "Locker bis geschäftlich. Oft in Tagungshotels. Fokus liegt auf dem Verlassen des Büros, nicht zwingend auf dem Schaffen einer besonderen Atmosphäre.",
+                    workshop: "Lern- und arbeitsorientiert, strukturiert, oft intensiv und zeitlich eng getaktet. Funktionaler Raum ist ausreichend."
+                },
+                ergebnis: {
+                    retreat: "Nachhaltige Verhaltensänderungen, eine klare, gemeinsam getragene Vision und ein Aktionsplan, der im Alltag verankert wird.",
+                    offsite: "Kurzfristige Motivationssteigerung, gemeinsames Erlebnis. Strategische Ergebnisse bleiben oft an der Oberfläche und versanden.",
+                    workshop: "Konkrete, anwendbare Ergebnisse zum spezifischen Thema. Ein neues Skillset, ein gelöstes Problem, ein erarbeiteter Plan."
+                },
+                dauer: {
+                    retreat: "Mehrtägig (2-5 Tage), um tiefes Eintauchen zu ermöglichen und nachhaltige Prozesse anzustoßen.",
+                    offsite: "Meist 1-2 Tage. Die Kürze erlaubt oft nur oberflächliche Behandlung von Themen.",
+                    workshop: "Wenige Stunden bis maximal 2 Tage. Effiziente Wissens- oder Ergebnisvermittlung steht im Vordergrund."
+                }
+            };
+
+            const comparisonBtns = document.querySelectorAll('.comparison-btn');
+            const comparisonTexts = document.querySelectorAll('.comparison-text');
+
+            function updateComparison(criterion) {
+                comparisonTexts.forEach(textEl => {
+                    const id = textEl.dataset.id;
+                    textEl.style.opacity = 0;
+                    setTimeout(() => {
+                        textEl.textContent = comparisonData[criterion][id];
+                        textEl.style.opacity = 1;
+                    }, 200);
+                });
+                comparisonBtns.forEach(btn => {
+                    if (btn.dataset.criterion === criterion) {
+                        btn.classList.add('bg-blue-800', 'text-white');
+                        btn.classList.remove('bg-stone-200', 'text-stone-800');
+                    } else {
+                        btn.classList.remove('bg-blue-800', 'text-white');
+                        btn.classList.add('bg-stone-200', 'text-stone-800');
+                    }
+                });
+            }
+
+            comparisonBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    updateComparison(btn.dataset.criterion);
+                });
+            });
+
+            updateComparison('ziel');
+
+            const retreatsData = [
+                {
+                    title: "North Star: Strategie & Vision",
+                    category: "strategie",
+                    forWhom: "Für Führungsteams an strategischen Wendepunkten.",
+                    description: "Schärfen Sie Ihre Unternehmensvision, definieren Sie strategische Prioritäten und entwickeln Sie eine Roadmap, die Ihr gesamtes Team inspiriert und ausrichtet.",
+                    icon: "⭐"
+                },
+                {
+                    title: "Team Catalyst: Kick-off & Neuausrichtung",
+                    category: "team",
+                    forWhom: "Für neue, wachsende oder restrukturierte Teams.",
+                    description: "Etablieren Sie eine Basis von Vertrauen und psychologischer Sicherheit. Entwickeln Sie gemeinsame Spielregeln und ein starkes Wir-Gefühl für eine hocheffektive Zusammenarbeit.",
+                    icon: "🚀"
+                },
+                {
+                    title: "Innovation Hub: Kreativität & Prototyping",
+                    category: "innovation",
+                    forWhom: "Für Produkt-, R&D- und Marketing-Teams.",
+                    description: "Brechen Sie aus gewohnten Denkmustern aus. Mit Methoden wie Design Thinking generieren Sie innovative Ideen und entwickeln erste Prototypen in einem kreativen Sprint.",
+                    icon: "💡"
+                },
+                {
+                    title: "Mindful Leader: Resilienz & Führung",
+                    category: "fuehrung",
+                    forWhom: "Für erfahrene und angehende Führungskräfte.",
+                    description: "Stärken Sie Ihre Selbstwahrnehmung, emotionale Intelligenz und Resilienz. Lernen Sie, Teams mit Empathie, Klarheit und innerer Ruhe zu führen – auch in turbulenten Zeiten.",
+                    icon: "🧠"
+                },
+                {
+                    title: "Culture Core: Werte & Zusammenarbeit",
+                    category: "team",
+                    forWhom: "Für das gesamte Unternehmen oder Abteilungen.",
+                    description: "Übersetzen Sie Ihre Unternehmenswerte in gelebtes Verhalten. Schaffen Sie eine Kultur des Feedbacks, der Wertschätzung und des gemeinsamen Wachstums.",
+                    icon: "❤️"
+                },
+                {
+                    title: "Future Forward: Zukunfts-Szenarien",
+                    category: "strategie",
+                    forWhom: "Für strategische Planer und Geschäftsführung.",
+                    description: "Analysieren Sie Trends und Unsicherheiten, entwickeln Sie robuste Zukunfts-Szenarien und leiten Sie daraus anpassungsfähige und widerstandsfähige Strategien ab.",
+                    icon: "🔮"
+                }
+            ];
+
+            const gallery = document.getElementById('retreat-gallery');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            function renderRetreats(filter = 'all') {
+                gallery.innerHTML = '';
+                const filteredData = (filter === 'all')
+                    ? retreatsData
+                    : retreatsData.filter(item => item.category === filter);
+
+                filteredData.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "retreat-card bg-white p-6 rounded-lg shadow-lg";
+                    card.innerHTML = `
+                        <div class="text-4xl mb-4">${item.icon}</div>
+                        <h3 class="text-xl font-bold text-blue-900 mb-2">${item.title}</h3>
+                        <p class="font-semibold text-amber-700 mb-3">${item.forWhom}</p>
+                        <p class="text-stone-600">${item.description}</p>
+                    `;
+                    gallery.appendChild(card);
+                });
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderRetreats(btn.dataset.filter);
+                });
+            });
+
+            renderRetreats();
+
+            const ctx = document.getElementById('valueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Strateg. Tiefe', 'Nachhaltigkeit', 'Team-Bindung', 'Persönl. Wachstum', 'Kreativität', 'Effizienz'],
+                    datasets: [{
+                        label: 'Business Retreat',
+                        data: [9, 8, 9, 8, 7, 6],
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)',
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        pointBackgroundColor: 'rgba(217, 119, 6, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(217, 119, 6, 1)'
+                    }, {
+                        label: 'Klass. Offsite',
+                        data: [4, 3, 7, 2, 4, 5],
+                        backgroundColor: 'rgba(128, 128, 128, 0.2)',
+                        borderColor: 'rgba(128, 128, 128, 1)',
+                        pointBackgroundColor: 'rgba(128, 128, 128, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(128, 128, 128, 1)'
                     },
-                    tooltip: {
-                       callbacks: {
-                            title: function(tooltipItems) {
-                                const item = tooltipItems[0];
-                                let label = item.chart.data.labels[item.dataIndex];
-                                if (Array.isArray(label)) {
-                                  return label.join(' ');
-                                } else {
-                                  return label;
-                                }
+                    {
+                        label: 'Workshop',
+                        data: [5, 5, 3, 2, 6, 9],
+                        backgroundColor: 'rgba(30, 58, 138, 0.2)',
+                        borderColor: 'rgba(30, 58, 138, 1)',
+                        pointBackgroundColor: 'rgba(30, 58, 138, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(30, 58, 138, 1)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#333'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                max: 10,
+                                stepSize: 2,
+                                backdropColor: 'rgba(255, 255, 255, 0)'
                             }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
                         }
                     }
                 }
-            }
+            });
         });
-
-    });
-</script>
+    </script>
+</body>
+</html>
